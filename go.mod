@@ -1,4 +1,4 @@
-module github.com/xmxu/aab-parser
+module github.com/izinga/aab-parser
 
 go 1.19
 
