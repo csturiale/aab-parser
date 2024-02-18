@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/xmxu/aab-parser/pb"
+	"github.com/izinga/aab-parser/pb"
 	"google.golang.org/protobuf/proto"
 
 	_ "image/jpeg" // handle jpeg format
