@@ -103,6 +103,7 @@ func (a *Aab) parseManifest() error {
 	element := xmlNode.GetElement()
 	attributes := element.GetAttribute()
 	for _, attr := range attributes {
+		fmt.Println("item ", attr.GetName())
 		switch attr.GetName() {
 		case "package":
 			a.manifest.Package = attr.GetValue()
@@ -127,11 +128,13 @@ outloop:
 			for _, attr := range attributes {
 				if item := attr.GetCompiledItem(); item != nil {
 					if ref := item.GetRef(); ref != nil {
+
 						switch attr.GetName() {
 						case "icon":
 							a.manifest.App.Icon = ref.GetName()
 						case "label":
 							a.manifest.App.Label = ref.GetName()
+
 						}
 						if a.manifest.App.isFilled() {
 							break outloop
@@ -226,6 +229,14 @@ func (a *Aab) findResource(t, name string, config *pb.Configuration) string {
 
 func (a *Aab) PackageName() string {
 	return a.manifest.Package
+}
+
+func (a *Aab) VersionCode() int64 {
+	return a.manifest.VersionCode
+}
+
+func (a *Aab) VersionName() string {
+	return a.manifest.VersionName
 }
 
 func (a *Aab) Manifest() *Manifest {
