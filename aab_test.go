@@ -1,10 +1,10 @@
 package aab
 
 import (
+	"github.com/csturiale/aab-parser/pb"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/xmxu/aab-parser/pb"
 )
 
 func TestParseAab(t *testing.T) {

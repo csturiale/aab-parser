@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/izinga/aab-parser/pb"
+	"github.com/csturiale/aab-parser/pb"
 	"google.golang.org/protobuf/proto"
 
 	_ "image/jpeg" // handle jpeg format
@@ -21,15 +21,16 @@ import (
 )
 
 type Manifest struct {
-	Package     string
-	VersionCode int64
-	VersionName string
-	App         Application
+	Package     string      `xml:"package,attr"`
+	VersionCode int64       `xml:"http://schemas.android.com/apk/res/android versionCode,attr"`
+	VersionName string      `xml:"http://schemas.android.com/apk/res/android versionName,attr"`
+	App         Application `xml:"application"`
 }
-
 type Application struct {
-	Icon  string
-	Label string
+	Icon  string `xml:"http://schemas.android.com/apk/res/android icon,attr"`
+	Label string `xml:"http://schemas.android.com/apk/res/android label,attr"`
+	Logo  string `xml:"http://schemas.android.com/apk/res/android logo,attr"`
+	Name  string `xml:"http://schemas.android.com/apk/res/android name,attr"`
 }
 
 func (a *Application) isFilled() bool {
@@ -131,7 +132,7 @@ outloop:
 
 						switch attr.GetName() {
 						case "icon":
-							a.manifest.App.Icon = ref.GetName()
+							a.manifest.App.Icon = strings.TrimPrefix(attr.GetValue(), "@")
 						case "label":
 							a.manifest.App.Label = ref.GetName()
 
@@ -197,12 +198,15 @@ func (a *Aab) findResource(t, name string, config *pb.Configuration) string {
 			if tt.Entry != nil {
 				for _, e := range tt.Entry {
 					if e.Name == name {
+						var tmpValue *pb.Value
 						for _, c := range e.ConfigValue {
 							if matchConfig(config, c.Config) {
 								value = c.Value
 								break
 							}
+							tmpValue = c.Value
 						}
+						value = tmpValue
 					}
 				}
 
