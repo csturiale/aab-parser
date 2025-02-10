@@ -20,7 +20,7 @@ import (
 	_ "golang.org/x/image/webp" // handle webp format
 )
 
-type Manifest struct {
+/*type Manifest struct {
 	Package     string      `xml:"package,attr"`
 	VersionCode int64       `xml:"http://schemas.android.com/apk/res/android versionCode,attr"`
 	VersionName string      `xml:"http://schemas.android.com/apk/res/android versionName,attr"`
@@ -31,7 +31,7 @@ type Application struct {
 	Label string `xml:"http://schemas.android.com/apk/res/android label,attr"`
 	Logo  string `xml:"http://schemas.android.com/apk/res/android logo,attr"`
 	Name  string `xml:"http://schemas.android.com/apk/res/android name,attr"`
-}
+}*/
 
 func (a *Application) isFilled() bool {
 	return len(a.Icon) > 0 && len(a.Label) > 0
@@ -135,11 +135,25 @@ outloop:
 							a.manifest.App.Icon = strings.TrimPrefix(attr.GetValue(), "@")
 						case "label":
 							a.manifest.App.Label = ref.GetName()
-
 						}
 						if a.manifest.App.isFilled() {
 							break outloop
 						}
+					}
+				}
+			}
+			appChilds := childElem.Child
+			for _, ac := range appChilds {
+				if ac.GetElement() == nil {
+					continue
+				}
+				if ac.GetElement().Name == "meta-data" {
+					mAttributes := ac.GetElement().Attribute
+					for _, attr := range mAttributes {
+						a.manifest.App.MetaData = append(a.manifest.App.MetaData, MetaData{
+							Name:  attr.GetName(),
+							Value: attr.GetValue(),
+						})
 					}
 				}
 			}
