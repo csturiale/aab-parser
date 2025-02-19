@@ -20,19 +20,6 @@ import (
 	_ "golang.org/x/image/webp" // handle webp format
 )
 
-/*type Manifest struct {
-	Package     string      `xml:"package,attr"`
-	VersionCode int64       `xml:"http://schemas.android.com/apk/res/android versionCode,attr"`
-	VersionName string      `xml:"http://schemas.android.com/apk/res/android versionName,attr"`
-	App         Application `xml:"application"`
-}
-type Application struct {
-	Icon  string `xml:"http://schemas.android.com/apk/res/android icon,attr"`
-	Label string `xml:"http://schemas.android.com/apk/res/android label,attr"`
-	Logo  string `xml:"http://schemas.android.com/apk/res/android logo,attr"`
-	Name  string `xml:"http://schemas.android.com/apk/res/android name,attr"`
-}*/
-
 func (a *Application) isFilled() bool {
 	return len(a.Icon) > 0 && len(a.Label) > 0
 }
@@ -104,7 +91,6 @@ func (a *Aab) parseManifest() error {
 	element := xmlNode.GetElement()
 	attributes := element.GetAttribute()
 	for _, attr := range attributes {
-		fmt.Println("item ", attr.GetName())
 		switch attr.GetName() {
 		case "package":
 			a.manifest.Package = attr.GetValue()
@@ -114,11 +100,13 @@ func (a *Aab) parseManifest() error {
 			}
 		case "versionName":
 			a.manifest.VersionName = attr.GetValue()
+		default:
+			println("Manifest Attr " + attr.Name + attr.Value)
 		}
 	}
 	children := element.Child
 	var childElem *pb.XmlElement
-outloop:
+	//outloop:
 	for _, child := range children {
 		childElem = child.GetElement()
 		if childElem == nil {
@@ -129,16 +117,20 @@ outloop:
 			for _, attr := range attributes {
 				if item := attr.GetCompiledItem(); item != nil {
 					if ref := item.GetRef(); ref != nil {
-
+						if strings.Contains(attr.GetValue(), "@string/app_name") {
+							a.manifest.App.Label = strings.TrimPrefix(attr.GetValue(), "@")
+						}
 						switch attr.GetName() {
 						case "icon":
 							a.manifest.App.Icon = strings.TrimPrefix(attr.GetValue(), "@")
 						case "label":
 							a.manifest.App.Label = ref.GetName()
+						default:
+							println("Manifest Attr " + attr.Name + attr.Value)
 						}
-						if a.manifest.App.isFilled() {
-							break outloop
-						}
+						//if a.manifest.App.isFilled() {
+						//	break outloop
+						//}
 					}
 				}
 			}
@@ -217,10 +209,13 @@ func (a *Aab) findResource(t, name string, config *pb.Configuration) string {
 							if matchConfig(config, c.Config) {
 								value = c.Value
 								break
+							} else {
+								tmpValue = c.Value
 							}
-							tmpValue = c.Value
 						}
-						value = tmpValue
+						if value == nil {
+							value = tmpValue
+						}
 					}
 				}
 

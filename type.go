@@ -1,7 +1,5 @@
 package aab
 
-import "google.golang.org/protobuf/reflect/protoreflect"
-
 type Instrumentation struct {
 	Name            string `xml:"http://schemas.android.com/apk/res/android name,attr"`
 	Target          string `xml:"http://schemas.android.com/apk/res/android targetPackage,attr"`
@@ -106,9 +104,4 @@ type Manifest struct {
 	Instrument                Instrumentation  `xml:"instrumentation"`
 	SDK                       UsesSDK          `xml:"uses-sdk"`
 	UsesPermissions           []UsesPermission `xml:"uses-permission"`
-}
-
-func (m Manifest) ProtoReflect() protoreflect.Message {
-	//TODO implement me
-	panic("implement me")
 }

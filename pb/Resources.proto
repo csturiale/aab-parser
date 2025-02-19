@@ -21,7 +21,7 @@ import "pb/Configuration.proto";
 package aapt.pb;
 
 option java_package = "com.android.aapt";
-option go_package = "aab/pb";
+option go_package = "pb";
 
 // A string pool that wraps the binary form of the C++ class android::ResStringPool.
 message StringPool {
@@ -65,6 +65,8 @@ message ResourceTable {
 
   // The version fingerprints of the tools that built the resource table.
   repeated ToolFingerprint tool_fingerprint = 4;
+
+  repeated DynamicRefTable dynamic_ref_table = 5;
 }
 
 // A package ID in the range [0x00, 0xff].
@@ -137,6 +139,7 @@ message Visibility {
 
   // The comment associated with the <public> tag.
   string comment = 3;
+
   // Indicates that the resource id may change across builds and that the public R.java identifier
   // for this resource should not be final. This is set to `true` for resources in `staging-group`
   // tags.
@@ -193,11 +196,13 @@ message OverlayableItem {
   // this <item>.
   uint32 overlayable_idx = 4;
 }
+
 // The staged resource ID definition of a finalized resource.
 message StagedId {
   Source source = 1;
   uint32 staged_id = 2;
 }
+
 // An entry ID in the range [0x0000, 0xffff].
 message EntryId {
   uint32 id = 1;
@@ -230,6 +235,7 @@ message Entry {
   // The set of values defined for this entry, each corresponding to a different
   // configuration/variant.
   repeated ConfigValue config_value = 6;
+
   // The staged resource ID of this finalized resource.
   StagedId staged_id = 7;
 }
@@ -289,10 +295,12 @@ message CompoundValue {
     MacroBody macro = 6;
   }
 }
+
 // Message holding a boolean, so it can be optionally encoded.
 message Boolean {
   bool value = 1;
 }
+
 // A value that is a reference to another resource. This reference can be by name or resource ID.
 message Reference {
   enum Type {
@@ -313,10 +321,13 @@ message Reference {
 
   // Whether this reference is referencing a private resource (@*package:type/entry).
   bool private = 4;
+
   // Whether this reference is dynamic.
   Boolean is_dynamic = 5;
+
   // The type flags used when compiling the reference. Used for substituting the contents of macros.
   uint32 type_flags = 6;
+
   // Whether raw string values would have been accepted in place of this reference definition. Used
   // for substituting the contents of macros.
   bool allow_raw = 7;
@@ -607,6 +618,7 @@ message XmlAttribute {
   // The optional interpreted/compiled version of the `value` string.
   Item compiled_item = 6;
 }
+
 message MacroBody {
   string raw_string = 1;
   StyleString style_string = 2;
@@ -614,11 +626,13 @@ message MacroBody {
   repeated NamespaceAlias namespace_stack = 4;
   SourcePosition source = 5;
 }
+
 message NamespaceAlias {
   string prefix = 1;
   string package_name = 2;
   bool is_private = 3;
 }
+
 message StyleString {
   message Span {
     string name = 1;
@@ -628,6 +642,7 @@ message StyleString {
   string str = 1;
   repeated Span spans = 2;
 }
+
 message UntranslatableSection {
   uint64 start_index = 1;
   uint64 end_index = 2;
